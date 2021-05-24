@@ -27,10 +27,10 @@ plotTopContries <- function(data, nCountries){
     years <- unique(df_filter$Year)
     
     plot <- ggplot(df_filter, aes(Year, LadderScore))+
-        geom_point(aes(color=Country))+
-        geom_path(aes(colour = Country))+
-        scale_x_continuous(breaks=years, labels=years)+
-        theme_classic()
+                geom_point(aes(color=Country))+
+                geom_path(aes(colour = Country))+
+                scale_x_continuous(breaks=years, labels=years)+
+                theme_classic()
     
     interactive_plot <- ggplotly(plot)
     return(interactive_plot)
