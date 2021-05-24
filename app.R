@@ -3,60 +3,71 @@ library(ggplot2)
 library(plotly)
 library(tidyverse)
 library(shinydashboard)
+library(leaflet)
+library(rnaturalearth)
+library(wesanderson)
+library(DT)
 
-##############
-# functions
-###
-prepData <- function(){
-    df <- read.csv("data/cleaned/happinessData.csv")
-    
-    df$Country <- factor(df$Country)
-    df$LadderScore <- as.numeric(df$LadderScore)
-    df$Year <- as.numeric(df$Year)
-    df$Rank <- as.numeric(df$Rank)
-    
-    return(df)
+# load functions
+source("plot_Leaflet.R")
+source("happinessYear.R")
+
+# global data
+world <- rnaturalearth::countries110
+happinessData <- read.csv("data/cleaned/happinessData.csv")
+choices_Year <- rev(unique(happinessData$Year))
+
+# make map with input
+makeMapShiny <- function(world, happinessData, inputYear){
+    world@data <- dataForYear(world, happinessData, inputYear)
+    palLeaflet <- makePalette(world)
+    world$label <- makeLabels(world)
+    map <- makeMap(world, palLeaflet)
+    return(map)
 }
 
-# plot top contries
-plotTopContries <- function(data, nCountries){
-    
-    df_filter <- df %>% 
-        filter(Rank <= nCountries) 
-    
-    years <- unique(df_filter$Year)
-    
-    plot <- ggplot(df_filter, aes(Year, LadderScore))+
-                geom_point(aes(color=Country))+
-                geom_path(aes(colour = Country))+
-                scale_x_continuous(breaks=years, labels=years)+
-                theme_classic()
-    
-    interactive_plot <- ggplotly(plot)
-    return(interactive_plot)
-    
+# make data table
+makeTableShiny <- function(happinessData, inputYear){
+    happinessYear <- getHappinessYear(happinessData, inputYear)
+    dt <- datatable(happinessYear, rownames = FALSE)
+    return(dt)
+}
+
+## UI Body
+body <- function(){
+    fluidRow(
+        column(width = 4,
+               
+               box(width = NULL, status = "primary",            
+                   selectInput("year",
+                               "Year",
+                               choices = choices_Year,
+                               selected = max(choices_Year)
+                               )
+                   ),
+               box(
+                   width = NULL, status = "primary",
+                   DT::dataTableOutput("table_countriesYear")
+               ),
+        ),
+        column(width = 8,
+               
+               box(width = NULL, status = "primary",
+                   leafletOutput("map_World", height = 500)
+               )
+        )
+        
+        
+    )
 }
 
 ##############
 # UI
 ###
 ui <- dashboardPage(
-    
-    # Application title
     dashboardHeader(title="World Happiness Report"),
-    
-    # Sidebar with a slider input for number of bins
-    dashboardSidebar(
-            sliderInput("nCountries",
-                        "Top n countries:",
-                        min = 1,
-                        max = 50,
-                        value = 10)
-        ),
-        
-        # Show a plot of the generated distribution
-        dashboardBody(
-            plotlyOutput("lineGraph"),)
+    dashboardSidebar(disable = TRUE),
+    dashboardBody(body())
 )
 
 
@@ -65,15 +76,17 @@ ui <- dashboardPage(
 ###
 server <- function(input, output) {
     
-    # setup the env
-    df <- prepData()
+    # leaflet map plot
+    output$map_World <- renderLeaflet({
+        makeMapShiny(world, happinessData, input$year)
+        })
     
-    # top countries plot
-    output$lineGraph <- renderPlotly({
-        plotTopContries(df, input$nCountries)
-    })
+    # tale of top countries
+    output$table_countriesYear <- DT::renderDataTable({
+        makeTableShiny(happinessData, input$year)
+        })
+    
 }
-
 
 
 

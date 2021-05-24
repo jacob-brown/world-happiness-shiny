@@ -42,7 +42,7 @@ makePalette <- function(spatialDF, westheme="Zissou1"){
 makeMap <- function(spatialDF, colPalette){
   
   map <- leaflet(spatialDF) %>%
-    setView(lng = -0, lat = 0,zoom = 1) %>%
+    setView(lng = -0, lat = 0, zoom = 1) %>%
     addPolygons(color = ~colPalette(LadderScore), 
                 weight = 1, 
                 smoothFactor = 0.5,
