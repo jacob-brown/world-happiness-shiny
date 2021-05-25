@@ -1,5 +1,4 @@
 catch = file.remove(list.files("data/cleaned/", full.names = TRUE))
-rm(list = ls())
 
 library(tools)
 library(tidyverse)

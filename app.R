@@ -9,17 +9,18 @@ library(wesanderson)
 library(DT)
 
 # load functions
-source("plot_Leaflet.R")
+source("plot_Map.R")
 source("happinessYear.R")
 
 # global data
 world <- rnaturalearth::countries110
 happinessData <- read.csv("data/cleaned/happinessData.csv")
+countryNamesRefTable <- read.csv("data/inGeoNotInHappy_corrected.csv")
 choices_Year <- rev(unique(happinessData$Year))
 
 # make map with input
 makeMapShiny <- function(world, happinessData, inputYear){
-    world@data <- dataForYear(world, happinessData, inputYear)
+    world@data <- dataForYear(world, happinessData, countryNamesRefTable, inputYear)
     palLeaflet <- makePalette(world)
     world$label <- makeLabels(world)
     map <- makeMap(world, palLeaflet)
