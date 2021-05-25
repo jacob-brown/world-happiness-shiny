@@ -14,7 +14,7 @@ source("happinessYear.R")
 
 # global data
 world <- rnaturalearth::countries110
-happinessData <- read.csv("data/cleaned/happinessData.csv")
+happinessData <- read.csv("data/happinessData.csv")
 countryNamesRefTable <- read.csv("data/inGeoNotInHappy_corrected.csv")
 choices_Year <- rev(unique(happinessData$Year))
 

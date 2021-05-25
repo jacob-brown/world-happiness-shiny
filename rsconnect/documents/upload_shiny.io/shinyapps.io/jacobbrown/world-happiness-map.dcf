@@ -1,0 +1,13 @@
+name: world-happiness-map
+title: world-happiness-map
+username:
+account: jacobbrown
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4180652
+bundleId: 4635912
+url: https://jacobbrown.shinyapps.io/world-happiness-map/
+when: 1621918075.67882
+lastSyncTime: 1621918075.67883
+asMultiple: FALSE
+asStatic: FALSE
